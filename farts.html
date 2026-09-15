@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Farts 💨</title>
+<style>
+*{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#171322;color:#fff}
+header{padding:24px;text-align:center;background:linear-gradient(135deg,#6d28d9,#ec4899)}
+h1{font-size:48px;margin:0 0 8px}.sub{margin:0;font-size:18px}
+main{max-width:1000px;margin:auto;padding:24px}.hidden{display:none!important}
+.games{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px}
+.card{background:#282139;border:2px solid #44365d;border-radius:20px;padding:22px;text-align:center;cursor:pointer;transition:.15s}
+.card:hover{transform:translateY(-4px);border-color:#ec4899}.emoji{font-size:55px}
+button{border:0;border-radius:14px;padding:14px 20px;font-size:17px;font-weight:bold;cursor:pointer;background:#ec4899;color:#fff}
+button.secondary{background:#44365d}.game{background:#211a30;border-radius:22px;padding:24px;min-height:520px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.big{font-size:76px;text-align:center;margin:55px 0 20px;font-weight:900}
+.center{text-align:center}.score{font-size:28px}.timer{font-size:25px}
+#spamBtn,#shootBtn{font-size:30px;padding:24px 50px;background:#7c3aed}
+.levels{display:flex;justify-content:center;gap:10px;margin:20px 0;flex-wrap:wrap}
+.levels button.active{background:#22c55e}.hint{text-align:center;color:#c8bedb}
+.obby{position:relative;height:340px;background:#7dd3fc;border-radius:18px;overflow:hidden;border:4px solid #fff}
+.player{position:absolute;width:28px;height:28px;background:#ef4444;border-radius:7px;left:20px;bottom:30px}
+.platform{position:absolute;height:24px;background:#facc15;border-radius:7px}
+.goal{position:absolute;right:20px;top:25px;font-size:38px}.mobile-controls{display:flex;justify-content:center;gap:10px;margin-top:15px}
+.ctrl{width:65px;height:55px;padding:5px}.basket{position:relative;height:330px;background:linear-gradient(#87ceeb 65%,#d9a15b 65%);border-radius:18px;overflow:hidden}
+.hoop{position:absolute;right:14%;top:65px;font-size:70px}.ball{position:absolute;left:15%;bottom:30px;font-size:50px}
+.eggs{height:390px;overflow:auto;background:#82c7e8;border-radius:18px;padding:20px;display:grid;grid-template-columns:repeat(4,1fr);gap:80px 50px}
+.egg{font-size:44px;text-align:center;cursor:pointer;user-select:none}.egg.found{opacity:.25;pointer-events:none}
+@media(max-width:600px){h1{font-size:38px}.eggs{grid-template-columns:repeat(2,1fr);gap:70px 30px}.game{padding:15px}.big{font-size:60px}}
+</style>
+</head>
+<body>
+<header><h1>💨 FARTS 💨</h1><p class="sub">Four totally ridiculous games.</p></header>
+<main>
+<section id="home">
+<h2>Choose a game</h2>
+<div class="games">
+<div class="card" onclick="openGame('spam')"><div class="emoji">6️⃣7️⃣</div><h2>How Many 67s?</h2><p>Spam as many 67s as you can!</p></div>
+<div class="card" onclick="openGame('obby')"><div class="emoji">🧱</div><h2>Knock-Off Obby</h2><p>Reach the finish without falling.</p></div>
+<div class="card" onclick="openGame('basket')"><div class="emoji">🏀</div><h2>Basket Challenge</h2><p>Make as many baskets as possible!</p></div>
+<div class="card" onclick="openGame('eggs')"><div class="emoji">🥚</div><h2>Find the Eggs</h2><p>Find all 8 eggs before time runs out.</p></div>
+</div>
+</section>
+
+<section id="spam" class="game hidden">
+<div class="top"><button class="secondary" onclick="home()">← Home</button><h2>💨 How Many 67s?</h2><span id="spamTimer" class="timer">15.0s</span></div>
+<div class="levels"><button class="active" onclick="spamLevel(1,this)">Level 1 · 15s</button><button onclick="spamLevel(2,this)">Level 2 · 10s</button><button onclick="spamLevel(3,this)">Level 3 · 5s</button></div>
+<div class="big">67</div><div class="center score">Score: <b id="spamScore">0</b></div>
+<div class="center" style="margin-top:25px"><button id="spamBtn">SPAM 67!</button></div>
+<p class="hint">Computer: SPACE · Phone: tap the button</p>
+</section>
+
+<section id="obby" class="game hidden">
+<div class="top"><button class="secondary" onclick="home()">← Home</button><h2>🧱 Knock-Off Obby</h2><button onclick="startObby()">Restart</button></div>
+<p class="center">Get the red player 🟥 to the 🏁. Don't touch the gaps!</p>
+<div id="obbyWorld" class="obby">
+<div class="platform" style="left:0;bottom:0;width:24%"></div><div class="platform" style="left:28%;bottom:70px;width:18%"></div>
+<div class="platform" style="left:51%;bottom:145px;width:16%"></div><div class="platform" style="left:72%;bottom:210px;width:20%"></div>
+<div class="platform" style="left:45%;bottom:260px;width:12%"></div><div class="goal">🏁</div><div id="player" class="player"></div>
+</div>
+<div class="mobile-controls"><button class="ctrl" onclick="move(-1)">◀</button><button class="ctrl" onclick="jump()">▲</button><button class="ctrl" onclick="move(1)">▶</button></div>
+<p id="obbyMsg" class="center hint">Arrow keys on computer · buttons on phone</p>
+</section>
+
+<section id="basket" class="game hidden">
+<div class="top"><button class="secondary" onclick="home()">← Home</button><h2>🏀 Basket Challenge</h2><span id="basketTimer" class="timer">20.0s</span></div>
+<div class="levels"><button class="active" onclick="basketLevel(1,this)">Level 1 · 20s</button><button onclick="basketLevel(2,this)">Level 2 · 15s</button><button onclick="basketLevel(3,this)">Level 3 · 8s</button></div>
+<div class="basket"><div class="hoop">🪩⭕</div><div class="ball">🏀</div></div>
+<div class="center score">Baskets: <b id="basketScore">0</b></div>
+<div class="center" style="margin-top:12px"><button id="shootBtn">SHOOT 🏀</button></div>
+<p class="hint">Computer: SPACE · Phone: tap SHOOT</p>
+</section>
+
+<section id="eggs" class="game hidden">
+<div class="top"><button class="secondary" onclick="home()">← Home</button><h2>🥚 Find the Eggs</h2><span id="eggTimer" class="timer">1:30</span></div>
+<p class="center">A sneaky robot hid 8 eggs! Scroll and tap each egg to claim it.</p>
+<div id="eggArea" class="eggs"></div>
+<div class="center score">Found: <b id="eggScore">0</b>/8</div>
+<div class="center" style="margin-top:15px"><button onclick="startEggs()">Restart</button></div>
+</section>
+</main>
+
+<script>
+let current=null, interval=null, spamCount=0, spamTime=15, basketCount=0,basketTime=20;
+function home(){clearInterval(interval);document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));document.getElementById('home').classList.remove('hidden');}
+function openGame(id){home();document.getElementById(id).classList.remove('hidden');if(id==='spam')spamLevel(1,document.querySelector('#spam .levels button'));if(id==='basket')basketLevel(1,document.querySelector('#basket .levels button'));if(id==='obby')startObby();if(id==='eggs')startEggs();}
+function spamLevel(n,btn){document.querySelectorAll('#spam .levels button').forEach(x=>x.classList.remove('active'));btn.classList.add('active');spamTime=[0,15,10,5][n];spamCount=0;document.getElementById('spamScore').textContent=0;document.getElementById('spamTimer').textContent=spamTime+'.0s';clearInterval(interval);let start=Date.now();interval=setInterval(()=>{let left=spamTime-(Date.now()-start)/1000;document.getElementById('spamTimer').textContent=Math.max(0,left).toFixed(1)+'s';if(left<=0){clearInterval(interval);}},50);}
+document.getElementById('spamBtn').onclick=()=>{if(document.getElementById('spamTimer').textContent!=='0.0s') {spamCount++;document.getElementById('spamScore').textContent=spamCount;}};
+document.addEventListener('keydown',e=>{if(e.code==='Space'){if(!document.getElementById('spam').classList.contains('hidden'))document.getElementById('spamBtn').click();else if(!document.getElementById('basket').classList.contains('hidden'))document.getElementById('shootBtn').click();e.preventDefault();} if(!document.getElementById('obby').classList.contains('hidden')){if(e.key==='ArrowLeft')move(-1);if(e.key==='ArrowRight')move(1);if(e.key==='ArrowUp')jump();}});
+let px=20,py=30;
+function startObby(){px=20;py=30;renderPlayer();document.getElementById('obbyMsg').textContent='Arrow keys on computer · buttons on phone';}
+function renderPlayer(){let p=document.getElementById('player');p.style.left=px+'%';p.style.bottom=py+'px';}
+function move(d){px=Math.max(2,Math.min(93,px+d*4));renderPlayer();checkGoal();}
+function jump(){py=Math.min(300,py+65);renderPlayer();setTimeout(()=>{py=Math.max(30,py-65);renderPlayer();checkGoal();},350);}
+function checkGoal(){if(px>85&&py>170){document.getElementById('obbyMsg').textContent='🎉 YOU BEAT THE OBBY!';}}
+function basketLevel(n,btn){document.querySelectorAll('#basket .levels button').forEach(x=>x.classList.remove('active'));btn.classList.add('active');basketTime=[0,20,15,8][n];basketCount=0;document.getElementById('basketScore').textContent=0;clearInterval(interval);let start=Date.now();interval=setInterval(()=>{let left=basketTime-(Date.now()-start)/1000;document.getElementById('basketTimer').textContent=Math.max(0,left).toFixed(1)+'s';if(left<=0)clearInterval(interval);},50);}
+document.getElementById('shootBtn').onclick=()=>{if(parseFloat(document.getElementById('basketTimer').textContent)>0){basketCount++;document.getElementById('basketScore').textContent=basketCount;}};
+function startEggs(){clearInterval(interval);let area=document.getElementById('eggArea');area.innerHTML='';document.getElementById('eggScore').textContent=0;for(let i=0;i<8;i++){let e=document.createElement('div');e.className='egg';e.textContent='🥚';e.onclick=()=>{if(!e.classList.contains('found')){e.classList.add('found');let n=+document.getElementById('eggScore').textContent+1;document.getElementById('eggScore').textContent=n;if(n===8){clearInterval(interval);alert('🎉 You found all 8 eggs!');}}};area.appendChild(e)}let start=Date.now(),total=90;interval=setInterval(()=>{let left=total-(Date.now()-start)/1000;let sec=Math.max(0,left);document.getElementById('eggTimer').textContent=Math.floor(sec/60)+':'+String(Math.floor(sec%60)).padStart(2,'0');if(left<=0){clearInterval(interval);alert('⏰ Time is up!');}},100);}
+</script>
+</body>
+</html>
